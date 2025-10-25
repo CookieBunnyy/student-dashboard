@@ -1,1 +1,1 @@
-you need to install python and intall flask framework and mysql connector in terminal. 
+you need to install python and install flask framework and mysql connector in terminal. 
