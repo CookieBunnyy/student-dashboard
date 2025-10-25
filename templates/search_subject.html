@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Subject</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='managesubstyle.css') }}">
+</head>
+<body>
+    <div class="flickering-background"></div>
+
+    <div class="sidebar">
+        <h2>Student Dashboard</h2>
+        <br>
+        <div class="info">
+            <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Picture" class="profile-img">
+            <p>Student Number: {{ student_info.student_number }}</p>
+            <p>Name: {{ student_info.name }}</p>
+            <p>Program: {{ student_info.program }}</p>
+            <p>Year & Section: {{ student_info.year_section }}</p>
+            <p>Status: {{ student_info.status }}</p>
+            </div>
+        <br>
+        <button class="nav-button" data-target="{{ url_for('dashboard') }}">Back to Dashboard</button>
+    </div>
+
+  
+    <div class="content1">
+        <h1>Search Subject</h1>
+        <form method="POST" action="{{ url_for('search_subject') }}">
+             <div class="form-group selectbox1">
+            <label for="subject_name">Select Subject:</label>
+            <select name="subject_name" id="selectbox3">
+                <option value="">Select...</option>
+                {% for subject in subjects %}
+                    <option value="{{ subject.subject_name }}">{{ subject.subject_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+            <br>
+            <button class="button1" type="submit">Search</button>
+        </form>
+ 
+        {% if subject_info %}
+        <h2>Subject Information</h2>
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Subject ID</th>
+                    <th>Subject Name</th>
+                    <th>Subject Code</th>
+                    <th>Instructor</th>
+                    <th>Schedule</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ subject_info.subject_id }}</td>
+                    <td>{{ subject_info.subject_name }}</td>
+                    <td>{{ subject_info.subject_code }}</td>
+                    <td>{{ subject_info.instructor }}</td>
+                    <td>{{ subject_info.schedule_day1 }} {{ subject_info.schedule_time1|strftime('%I:%M %p') }} /
+                        {{ subject_info.schedule_day2 }} {{ subject_info.schedule_time2|strftime('%I:%M %p') }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Scores</h2>
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Score Type</th>
+                    <th>Score Type Number / Exam Type</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for score_type, items in scores.items() %}
+                    {% for identifier, score in items.items() %}
+                    <tr>
+                        <td>{{ score_type }}</td>
+                        <td>
+                            {% if score_type == 'Exam' %}
+                                {{ identifier }} Exam
+                            {% else %}
+                                {{ score_type }} {{ identifier }}
+                            {% endif %}
+                        </td>
+                        <td>{{ score }}</td>
+                    </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+            
+            
+        </table>
+        {% endif %}
+    </div>
+</div>
+    <script>
+        function changeThemeById(theme) {
+           
+            document.documentElement.setAttribute('data-theme', theme);
+        
+    
+            localStorage.setItem('theme', theme);
+        }
+        
+       
+        window.onload = function () {
+            const savedTheme = localStorage.getItem('theme') || 'default';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        
+          
+            const buttons = document.querySelectorAll('#color-theme .theme-btn');
+            buttons.forEach(btn => {
+                if (btn.id === savedTheme) {
+                    btn.classList.add('active-theme');
+                } else {
+                    btn.classList.remove('active-theme');
+                }
+            });
+        };
+    
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const navLinks = document.querySelectorAll("a.nav-link, button.nav-button");
+        
+            navLinks.forEach(link => {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault(); 
+        
+                    const targetUrl = this.href || this.getAttribute("data-target");
+                    if (targetUrl) {
+                        
+                        sessionStorage.setItem("target", targetUrl);
+        
+                       
+                        window.location.href = "/loading";
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

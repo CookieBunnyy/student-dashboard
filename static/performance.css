@@ -1,0 +1,190 @@
+@font-face{
+    font-family: myFont;
+    src:url(Kodefont.ttf)
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.3; 
+  }
+  100% {
+    opacity: 0.7; 
+  }
+}
+.flickering-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: var(--background-image);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  animation: flicker 3s infinite;
+  z-index: -1; 
+}
+body {
+  background-color: #0f0f0f;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  color: var(--text-color);
+  transition: background-image 0.2s ease, color 0.5s ease;
+ 
+ 
+}
+h2{
+    font-family: myFont;
+}
+.sidebar a {
+    display: flex;
+    padding: 10px 10px;
+    background-color: rgba(38, 172, 230, 0);  
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 20px;
+    transition: background-color 0.2s, transform 0.3s, text-shadow 0.3s;
+    height: 20px;
+    align-items: end;
+    margin-left: 20px;
+    margin-top: 10px;
+    font-family: myFont;
+}
+.sidebar a:hover{
+    text-shadow: 0 0 5px #fefefe80, 0 0 20px #ffffff, 0 0 20px #ffffffa2;
+    transform: scale(1.01);  
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    background-color: var(--button-color);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+    color: var(--sidebar-background-color);
+    border: solid 3px var(--sidebar-background-color);
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+:root {
+  --background-image: url('images/bg17.jpg');
+  --text-color: #f6f6f6;
+  --button-color: #52525280;
+  --button-hover-color: #71717178;
+  --sidebar-background-color: #ffffffe6;
+  --sidebar-text-color: #0f0f0f;
+  --sidebar-hover-color: #ddd;
+  --bar-color: #ffffff;
+}
+
+/* Dark theme */
+:root[data-theme="gray"] {
+  --background-image: url('images/bg17.jpg');
+  --text-color: #f7f7f7;
+  --button-color: #52525280;
+  --button-hover-color: #ae36367b;
+  --sidebar-background-color: #ff4e3ae8;
+  --sidebar-text-color: #444444;
+  --sidebar-hover-color: #2c3e50;
+  --bar-color: #ae3636fe;
+}
+
+/* Light theme */
+:root[data-theme="light"] {
+  --background-image: url('images/bg17.jpg');
+  --text-color: #ffffff;
+  --button-color: #52525280;
+  --button-hover-color: #3f789e73;
+  --sidebar-background-color: #55badcee;
+  --sidebar-text-color: #2c3e50;
+  --sidebar-hover-color: #f0f0f0;
+  --bar-color: #a5f9ff;
+}
+
+/* Ocean theme */
+:root[data-theme="ocean"] {
+  --background-image: url('images/bg17.jpg');
+  --text-color: #ecf0f1;
+  --button-color: #52525280;
+  --button-hover-color: #044ba165;
+  --sidebar-background-color: #1f86eee0;
+  --sidebar-text-color: #083ca4;
+  --sidebar-hover-color: #1f7c65;
+  --bar-color: #3c93fe;
+}
+
+/* Sunset theme */
+:root[data-theme="sunset"] {
+  --background-image: url('images/bg17.jpg');
+  --text-color: #ffffff;
+  --button-color: #52525280;
+  --button-hover-color: #a0410175;
+  --sidebar-background-color: #f8c470eb;
+  --sidebar-text-color: #50452c;
+  --sidebar-hover-color: #d35400;
+  --bar-color: #ffdc68;
+}
+
+/* Forest theme */
+:root[data-theme="forest"] {
+  --background-image: url('images/bg17.jpg');
+    --text-color: #ffffff;
+    --button-color: #52525280;
+    --button-hover-color: #13583376;
+    --sidebar-background-color: rgba(56, 119, 57, 0.906);
+    --sidebar-text-color: #31713f;
+    --sidebar-hover-color: #1c7c49;
+  --bar-color: #268539;
+}
+
+:root[data-theme="blossom"] {
+  --background-image: url('images/bg17.jpg');
+  --text-color: #ffffff;
+  --button-color: #52525280;
+  --button-hover-color: #fd7dd279;
+  --sidebar-background-color: #fe6db5e5;
+  --sidebar-text-color: #b94873;
+  --sidebar-hover-color: #ffffff;
+  --bar-color: #ff5acd;
+}
+
+.theme-selector{
+  font-family: myFont;
+  font-size: 14px;
+  margin-top: 9%;
+  margin-left: 1%;
+}
+
+
+
+.theme-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+ 
+}
+
+.theme-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.theme-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}

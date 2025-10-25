@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="flickering-background"></div>
+    <a href="{{ url_for('logout') }}" class="logout-btn" onclick="logoutAndClose(event)">Logout</a>
+    <div class="sidebar">
+        <h2>Student Dashboard</h2>
+        
+        <br>
+        <div class="info">
+        <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Picture" class="profile-img">
+        <p>Student Number: {{ student_info.student_number }}</p>
+        <p>Name: {{ student_info.name }}</p>
+        <p>Program: {{ student_info.program }}</p>
+        <p>Year & Section: {{ student_info.year_section }}</p>
+        <p>Status: {{ student_info.status }}</p>
+        </div>
+        <br>
+        <button class="nav-button" data-target="{{ url_for('student_information') }}">Student Information</button>
+        <button class="nav-button" data-target="{{ url_for('manage_subjects') }}">Manage Subjects</button>
+        <button class="nav-button" data-target="{{ url_for('manage_scores') }}">Manage Scores</button>
+        <button class="nav-button" data-target="{{ url_for('search_subject') }}">Search Subjects</button>
+        <br>
+        <br>
+        <div class="theme-selector" id="color-theme">
+            <label>Choose your theme:</label>
+            <div class="color-theme">
+                <button class="theme-btn" id="default" style="background-color:rgb(38, 38, 38);" title="Default" onclick="changeThemeById('default')"></button>
+                <button class="theme-btn" id="gray" style="background-color: #7f8c8d;" title="Gray" onclick="changeThemeById('gray')"></button>
+                <button class="theme-btn" id="light" style="background-color:rgb(145, 233, 255);" title="Light" onclick="changeThemeById('light')"></button>
+                <button class="theme-btn" id="ocean" style="background-color: #3498db;" title="Ocean" onclick="changeThemeById('ocean')"></button>
+                <button class="theme-btn" id="sunset" style="background-color:rgb(245, 170, 104);" title="Sunset" onclick="changeThemeById('sunset')"></button>
+                <button class="theme-btn" id="forest" style="background-color: #27ae60;" title="Forest" onclick="changeThemeById('forest')"></button>
+                <button class="theme-btn" id="blossom" style="background-color:rgb(255, 52, 127);" title="Cherry Blossom" onclick="changeThemeById('blossom')"></button>
+            </div>
+        </div>
+        
+        
+    </div>
+    
+    <div class="content" id="main-content">
+        <h1 id="dashboardTitle">Welcome to Your Dashboard</h1>
+
+        <br>
+       
+        <div class="nav-panels">
+            <div class="nav-panel" onclick="navigate('Student Information')" data-target="{{ url_for('student_information') }}" >
+                <h3>Student Information</h3>
+                <i class="fas fa-user-graduate icon-below"></i>
+            </div>
+            <div class="nav-panel" onclick="navigate('Manage Subjects')"data-target="{{ url_for('manage_subjects') }}">
+                <h3>Manage Subjects</h3>
+                <i class="fas fa-book-open icon-below"></i>
+            </div>
+            <div class="nav-panel" onclick="navigate('Manage Scores')" data-target="{{ url_for('manage_scores') }}">
+                <h3>Manage Scores</h3>
+                <i class="fas fa-clipboard-list icon-below"></i>
+            </div>
+            <div class="nav-panel" onclick="navigate('Student Performance')"data-target="{{ url_for('performance_graph') }}">
+                <h3>Student Performance</h3>
+                <i class="fas fa-chart-line icon-below"></i>
+            </div>
+        </div>
+
+        
+        <div class="back-to-dashboard" id="back-btn-container" style="display: none;">
+            <button onclick="goBackToDashboard()">Back to Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        function navigate(section) {
+            if (section === 'Student Information') {
+                window.location.href = '/student_information';
+            } else if (section === 'Manage Subjects') {
+                window.location.href = '/manage_subjects';  
+            } else if (section === 'Manage Scores') {
+                window.location.href = '/manage_scores';
+            } else if (section === 'Search Subject') {
+                window.location.href = '/search_subject';
+            } else if (section === 'Student Performance') {
+                window.location.href = '/performance_graph';
+            
+                
+            } else {
+                document.getElementById('main-content').innerHTML = `
+                    <h1>${section}</h1>
+                    <div class="back-to-dashboard" id="back-btn-container">
+                        <button onclick="goBackToDashboard()">Back to Dashboard</button>
+                    </div>
+                `;
+            }
+        }
+    
+        function goBackToDashboard() {
+           
+            window.location.href = "/";
+        }
+
+        function logoutAndClose(event) {
+            event.preventDefault(); 
+    
+            
+            window.location.href = "{{ url_for('logout') }}";
+    
+            
+            setTimeout(function() {
+                window.close();
+            }, 1000); 
+        }
+
+
+
+        window.onload = function() {
+            const h1 = document.getElementById('dashboardTitle');
+            const text = h1.textContent; 
+            h1.textContent = ''; 
+            let index = 0;
+        
+            function type() {
+                if (index < text.length) {
+                    h1.textContent += text.charAt(index); 
+                    index++;
+                    setTimeout(type, 100); 
+                }
+            }
+        
+            type(); 
+        };
+
+        
+        function changeThemeById(theme) {
+          
+            document.documentElement.setAttribute('data-theme', theme);
+
+            localStorage.setItem('theme', theme);
+        }
+        
+       
+        window.onload = function () {
+            const savedTheme = localStorage.getItem('theme') || 'default';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        
+  
+            const buttons = document.querySelectorAll('#color-theme .theme-btn');
+            buttons.forEach(btn => {
+                if (btn.id === savedTheme) {
+                    btn.classList.add('active-theme');
+                } else {
+                    btn.classList.remove('active-theme');
+                }
+            });
+        };
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            const navLinks = document.querySelectorAll("div.nav-panel,a.nav-link, button.nav-button");
+        
+            navLinks.forEach(link => {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault(); 
+        
+                    const targetUrl = this.href || this.getAttribute("data-target");
+                    if (targetUrl) {
+                     
+                        sessionStorage.setItem("target", targetUrl);
+        
+                   
+                        window.location.href = "/loading";
+                    }
+                });
+            });
+        });
+        
+    </script>
+
+   
+    
+</body>
+</html>

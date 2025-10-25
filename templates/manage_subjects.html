@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Subjects</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='managesubstyle.css') }}">
+</head>
+<body>
+    <div class="flickering-background"></div>
+
+<div class="sidebar">
+    <h2>Student Dashboard</h2>
+    <br>
+    <div class="info">
+    <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Picture" class="profile-img">
+    <p>Student Number: {{ student_info.student_number }}</p>
+    <p>Name: {{ student_info.name }}</p>
+    <p>Program: {{ student_info.program }}</p>
+    <p>Year & Section: {{ student_info.year_section }}</p>
+    <p>Status: {{ student_info.status }}</p>
+    </div>
+    <br>
+    <button class="nav-button" data-target="{{ url_for('dashboard') }}">Back to Dashboard</button>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="theme-selector" id="color-theme">
+        <label>Choose your theme:</label>
+        <div class="color-theme">
+            <button class="theme-btn" id="default" style="background-color:rgb(38, 38, 38);" title="Default" onclick="changeThemeById('default')"></button>
+            <button class="theme-btn" id="gray" style="background-color: #7f8c8d;" title="Gray" onclick="changeThemeById('gray')"></button>
+            <button class="theme-btn" id="light" style="background-color:rgb(145, 233, 255);" title="Light" onclick="changeThemeById('light')"></button>
+            <button class="theme-btn" id="ocean" style="background-color: #3498db;" title="Ocean" onclick="changeThemeById('ocean')"></button>
+            <button class="theme-btn" id="sunset" style="background-color:rgb(245, 170, 104);" title="Sunset" onclick="changeThemeById('sunset')"></button>
+            <button class="theme-btn" id="forest" style="background-color: #27ae60;" title="Forest" onclick="changeThemeById('forest')"></button>
+            <button class="theme-btn" id="blossom" style="background-color:rgb(255, 52, 127);" title="Cherry Blossom" onclick="changeThemeById('blossom')"></button>
+        </div>
+    </div>
+    
+</div>
+
+
+<div class="content">
+    <h1>Manage Subjects</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div id="flash-container">
+        {% for category, message in messages %}
+          <div class="flash-message {{ category }}">
+            <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+   <div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        
+        <form id="editForm">
+            <h2>Edit Subject</h2>
+            <hr>
+            <input type="hidden" id="editSubjectID">
+            
+            <div class="form-group code">
+                <label for="editSubjectCode">Subject Code:</label>
+                <input type="text" id="editSubjectCode" >
+            </div>
+        
+            <div class="form-group">
+                <label for="editSubjectName">Subject Name:</label>
+                <input type="text" id="editSubjectName" >
+            </div>
+        
+            <div class="form-group">
+                <label for="editInstructor">Instructor:</label>
+                <input type="text" id="editInstructor" >
+            </div>
+        
+            <div class="form-group">
+                <label for="editScheduleDay1">Schedule Day 1:</label>
+                <select id="editScheduleDay1" name="schedule_day1">
+                    <option value="">Select Day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editScheduleDay2">Schedule Day 2:</label>
+                <select id="editScheduleDay2" name="schedule_day2">
+                    <option value="">Select Day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editScheduleTime1">Start Time Day 1 (Optional):</label>
+                <input type="time" id="editScheduleTime1">
+            </div>
+        
+            <div class="form-group">
+                <label for="editScheduleEndTime1">End Time Day 1 (Optional):</label>
+                <input type="time" id="editScheduleEndTime1">
+            </div>
+        
+           
+        
+            <div class="form-group">
+                <label for="editScheduleTime2">Start Time Day 2 (Optional):</label>
+                <input type="time" id="editScheduleTime2">
+            </div>
+        
+            <div class="form-group">
+                <label for="editScheduleEndTime2">End Time Day 2 (Optional):</label>
+                <input type="time" id="editScheduleEndTime2">
+            </div>
+        
+            <div class="form-group" style="flex: 1 1 100%; display: flex; justify-content: center;">
+                <button type="button" onclick="saveEdit()">Save Changes</button>
+            </div>
+        </form>
+        
+    </div>
+</div>
+
+
+
+<form method="POST" action="{{ url_for('add_subject') }}">
+    <div class="form-group">
+        <label for="subject_name">Subject Name:</label>
+        <input type="text" id="subject_name" name="subject_name" placeholder="Subject Name" required>
+    </div>
+
+    <div class="form-group">
+        <label for="subject_code">Subject Code:</label>
+        <input type="text" id="subject_code" name="subject_code" placeholder="Subject Code" required>
+    </div>
+
+    <div class="form-group">
+        <label for="instructor">Instructor:</label>
+        <input type="text" id="instructor" name="instructor" placeholder="Instructor" required>
+    </div>
+
+    <div class="form-group select">
+        <label for="schedule_day1">Schedule Day 1:</label>
+        <select id="schedule_day1" name="schedule_day1" required>
+            <option value="">Select Day</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+        </select>
+    </div>
+   
+   
+    <div class="form-group select">
+        <label for="schedule_day2">Schedule Day 2:</label>
+        <select id="schedule_day2" name="schedule_day2" >
+            <option value="">Select Day</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+        </select>
+    </div>
+   
+    <div class="form-group time-group1">
+        <label for="schedule_time1">Start Time Day 1:</label>
+        <input type="time" id="schedule_time1" name="schedule_time1" required>
+    </div>
+    <div class="form-group time-group1">
+        <label for="schedule_time2">Start Time  Day 2:</label>
+        <input type="time" id="schedule_time2" name="schedule_time2" >
+    </div>
+   
+
+    <div class="form-group time-group1">
+        <label for="schedule_endtime1">End Time Day 1:</label>
+        <input type="time" id="schedule_endtime1" name="schedule_endtime1" required>
+    </div>
+   
+
+    <div class="form-group time-group2">
+        <label for="schedule_endtime2">End Time Day 2:</label>
+        <input type="time" id="schedule_endtime2" name="schedule_endtime2" >
+    </div>
+
+    <div class="form-group button" style="flex: 1 1 100%; display: flex; justify-content: center;">
+        <button type="submit">Add Subject</button>
+    </div>
+</form>
+
+
+    
+    <h2>Existing Subjects</h2>
+    <table class="info-table">
+        <thead>
+            <tr>
+                <th>Subject ID</th>
+                <th>Subject Name</th>
+                <th>Subject Code</th>
+                <th>Instructor</th>
+                <th>Schedule</th>
+                <th>Timestamp</th> 
+                <th>Action</th>   
+            </tr>
+        </thead>
+        <tbody>
+            {% for subject in subjects %}
+            <tr>
+                <td>{{ subject.subject_id }}</td>
+                <td>{{ subject.subject_name }}</td>
+                <td>{{ subject.subject_code }}</td>
+                <td>{{ subject.instructor }}</td>
+                <td>
+                    {{ subject.schedule_day1 }} 
+                    {{ subject.schedule_time1|strftime('%I:%M %p') }} - {{ subject.schedule_endtime1|strftime('%I:%M %p') }} /
+                    {{ subject.schedule_day2 }} 
+                    {{ subject.schedule_time2|strftime('%I:%M %p') }} - {{ subject.schedule_endtime2|strftime('%I:%M %p') }}
+                </td>
+                <td>{{ subject.timestamp }}</td>
+                <td>
+                    <button onclick="openEditModal(
+                        '{{ subject.subject_id }}',
+                        '{{ subject.subject_code }}',
+                        '{{ subject.subject_name }}',
+                        '{{ subject.instructor }}',
+                        '{{ subject.schedule_day1 }}',
+                        '{{ subject.schedule_time1 }}',
+                        '{{ subject.schedule_endtime1 }}',
+                        '{{ subject.schedule_day2 }}',
+                        '{{ subject.schedule_time2 }}',
+                        '{{ subject.schedule_endtime2 }}'
+                    )">Edit</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+
+
+    <div class="delete-row">
+        <label for="subject_id" id="subtext">Subject ID to Delete:</label>
+        <input type="text" id="subject_id" name="subject_id">
+        <button onclick="deleteRow()">Delete Row</button>
+    </div>
+
+    
+    
+</div>
+
+
+</div>
+
+<script>
+    
+   
+      function deleteRow() {
+        const subjectId = document.getElementById('subject_id').value;
+        
+        if (subjectId) {
+          
+            fetch('/delete_subject', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ subject_id: subjectId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message); 
+                    location.reload(); 
+                } else {
+                    alert(data.message); 
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting subject');
+            });
+        } else {
+            alert('Please enter a Subject ID.');
+        }
+    }
+    
+    
+    let selectedSubjectId = null;
+
+    function openEditModal(subjectId, subjectCode, subjectName, instructor, scheduleDay1, scheduleTime1, scheduleEndTime1, scheduleDay2 = '', scheduleTime2 = '', scheduleEndTime2 = '') {
+        document.getElementById("editSubjectID").value = subjectId;
+        document.getElementById("editSubjectCode").value = subjectCode;
+        document.getElementById("editSubjectName").value = subjectName;
+        document.getElementById("editInstructor").value = instructor;
+    
+        document.getElementById("editScheduleDay1").value = scheduleDay1 || '';
+        document.getElementById("editScheduleTime1").value = scheduleTime1 || '';
+        document.getElementById("editScheduleEndTime1").value = scheduleEndTime1 || '';
+        document.getElementById("editScheduleDay2").value = scheduleDay2 || '';
+        document.getElementById("editScheduleTime2").value = scheduleTime2 || '';
+        document.getElementById("editScheduleEndTime2").value = scheduleEndTime2 || '';
+    
+        selectedSubjectId = subjectId;
+        document.getElementById("editModal").style.display = "block";
+    }
+    
+    
+    function closeEditModal() {
+        document.getElementById("editModal").style.display = "none";
+    }
+    
+    function saveEdit() {
+    let subjectId = document.getElementById("editSubjectID").value;
+    let subjectCode = document.getElementById("editSubjectCode").value;
+    let subjectName = document.getElementById("editSubjectName").value;
+    let instructor = document.getElementById("editInstructor").value;
+    let scheduleDay1 = document.getElementById("editScheduleDay1").value;
+    let scheduleTime1 = document.getElementById("editScheduleTime1").value;
+    let scheduleEndTime1 = document.getElementById("editScheduleEndTime1").value;
+    let scheduleDay2 = document.getElementById("editScheduleDay2").value;
+    let scheduleTime2 = document.getElementById("editScheduleTime2").value;
+    let scheduleEndTime2 = document.getElementById("editScheduleEndTime2").value;
+
+    fetch('/edit_subject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            subject_id: subjectId,
+            subject_code: subjectCode,
+            subject_name: subjectName,
+            instructor: instructor,
+            schedule_day1: scheduleDay1,
+            schedule_time1: scheduleTime1,
+            schedule_endtime1: scheduleEndTime1,
+            schedule_day2: scheduleDay2,
+            schedule_time2: scheduleTime2,
+            schedule_endtime2: scheduleEndTime2
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    })
+    .catch(error => {
+        alert('Error updating subject');
+        console.error(error);
+    });
+}
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const navLinks = document.querySelectorAll("a.nav-link, button.nav-button");
+    
+        navLinks.forEach(link => {
+            link.addEventListener("click", function (e) {
+                e.preventDefault(); 
+    
+                const targetUrl = this.href || this.getAttribute("data-target");
+                if (targetUrl) {
+                    
+                    sessionStorage.setItem("target", targetUrl);
+    
+                   
+                    window.location.href = "/loading";
+                }
+            });
+        });
+    });
+
+    setTimeout(() => {
+        const flash = document.querySelector('.flash-message');
+        if (flash) {
+            flash.style.display = 'none';
+        }
+    }, 10000); 
+</script>
+
+</body>
+</html>

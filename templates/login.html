@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+   
+</head>
+<body>
+    <div class="flickering-background"></div>
+    <div class="login-container">
+        <h2>Student Login</h2>
+        <form action="/login" method="POST">
+            <input type="text" name="student_number" placeholder="Student Number" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+            <br>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert {{ 'alert-danger' if category == 'error' else 'alert-success' }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+          
+        </form>
+        
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+<br>
+    <div class="theme-selector" id="color-theme">
+        <label> &nbsp;Choose your theme:</label>
+        <div class="color-theme">
+            <button class="theme-btn" id="default" style="background-color:rgb(38, 38, 38);" title="Default" onclick="changeThemeById('default')"></button>
+            <button class="theme-btn" id="gray" style="background-color: #7f8c8d;" title="Gray" onclick="changeThemeById('gray')"></button>
+            <button class="theme-btn" id="light" style="background-color:rgb(145, 233, 255);" title="Light" onclick="changeThemeById('light')"></button>
+            <button class="theme-btn" id="ocean" style="background-color: #3498db;" title="Ocean" onclick="changeThemeById('ocean')"></button>
+            <button class="theme-btn" id="sunset" style="background-color:rgb(245, 170, 104);" title="Sunset" onclick="changeThemeById('sunset')"></button>
+            <button class="theme-btn" id="forest" style="background-color: #27ae60;" title="Forest" onclick="changeThemeById('forest')"></button>
+            <button class="theme-btn" id="blossom" style="background-color:rgb(255, 52, 127);" title="Cherry Blossom" onclick="changeThemeById('blossom')"></button>
+        </div>
+        <script>
+            function changeThemeById(theme) {
+               
+                document.documentElement.setAttribute('data-theme', theme);
+            
+              
+                localStorage.setItem('theme', theme);
+            }
+            
+   
+            window.onload = function () {
+                const savedTheme = localStorage.getItem('theme') || 'default';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            
+               
+                const buttons = document.querySelectorAll('#color-theme .theme-btn');
+                buttons.forEach(btn => {
+                    if (btn.id === savedTheme) {
+                        btn.classList.add('active-theme');
+                    } else {
+                        btn.classList.remove('active-theme');
+                    }
+                });
+            };
+            
+        </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loading...</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
+   
+</head>
+<body>
+
+    <div class="spinner">
+        <div></div><div></div><div></div>
+        <div></div><div></div><div></div>
+    </div>
+<br>
+    <div class="text" id="loading-text"></div>
+
+    <script>
+        const messages = [
+        "Loading your dashboard...",
+        "Brewing some JavaScript magic...",
+        "Fetching your subjects...",
+        "Sharpening pencils for performance graphs...",
+        "Making things look pretty...",
+        "One moment, we're almost there...",
+        "Preparing your learning journey...",
+        "Hang tight! We're grabbing your data..."
+    ];
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    document.getElementById("loading-text").textContent = randomMessage;
+
+    
+    window.onload = function () {
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        const buttons = document.querySelectorAll('#color-theme .theme-btn');
+        buttons.forEach(btn => {
+            btn.classList.toggle('active-theme', btn.id === savedTheme);
+        });
+
+        setTimeout(() => {
+            const target = sessionStorage.getItem('target') || "{{ url_for('dashboard') }}";
+            window.location.href = target;
+        }, 1500);
+    };
+
+  
+    function changeThemeById(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    }
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Scores</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='managesubstyle.css') }}">
+</head>
+<body>
+    <div class="flickering-background"></div>
+    <div id="editScoreModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditScoreModal()">&times;</span>
+            <form id="editScoreForm">
+                <h2>Edit Score</h2>
+                <hr>
+                <input type="hidden" id="editScoreID">
+            
+                <div class="form-group">
+                    <label for="editSubjectName">Subject Name:</label>
+                    <input type="text" id="editSubjectName">
+                </div>
+            
+                <div class="form-group">
+                    <label for="editScoreType">Score Type:</label>
+                    <select id="editScoreType">
+                        <option value="">Select Type</option>
+                        <option value="Quiz">Quiz</option>
+                        <option value="Activity">Activity</option>
+                        <option value="Exam">Exam</option>
+                    </select>
+                </div>
+            
+                <div class="form-group">
+                    <label for="editScoreTypeNumber">Score Type Number:</label>
+                    <select id="editScoreTypeNumber">
+                        <option value="">Select</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+            
+                <div class="form-group">
+                    <label for="editExamType">Exam Type:</label>
+                    <input type="text" id="editExamType">
+                </div>
+            
+                <div class="form-group">
+                    <label for="editScore">Score:</label>
+                    <input type="number" id="editScore">
+                </div>
+            
+                <button type="button" onclick="saveScoreEdit()">Save Changes</button>
+            </form>
+            
+        </div>
+    </div>
+
+<div class="sidebar">
+    <h2>Student Dashboard</h2>
+    <br>
+    <div class="info">
+    <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Picture" class="profile-img">
+    <p>Student Number: {{ student_info.student_number }}</p>
+    <p>Name: {{ student_info.name }}</p>
+    <p>Program: {{ student_info.program }}</p>
+    <p>Year & Section: {{ student_info.year_section }}</p>
+    <p>Status: {{ student_info.status }}</p>
+    </div>
+    <br>
+    <button class="nav-button" data-target="{{ url_for('dashboard') }}">Back to Dashboard</button>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="theme-selector" id="color-theme">
+        <label>Choose your theme:</label>
+        <div class="color-theme">
+            <button class="theme-btn" id="default" style="background-color:rgb(38, 38, 38);" title="Default" onclick="changeThemeById('default')"></button>
+            <button class="theme-btn" id="gray" style="background-color: #7f8c8d;" title="Gray" onclick="changeThemeById('gray')"></button>
+            <button class="theme-btn" id="light" style="background-color:rgb(145, 233, 255);" title="Light" onclick="changeThemeById('light')"></button>
+            <button class="theme-btn" id="ocean" style="background-color: #3498db;" title="Ocean" onclick="changeThemeById('ocean')"></button>
+            <button class="theme-btn" id="sunset" style="background-color:rgb(245, 170, 104);" title="Sunset" onclick="changeThemeById('sunset')"></button>
+            <button class="theme-btn" id="forest" style="background-color: #27ae60;" title="Forest" onclick="changeThemeById('forest')"></button>
+            <button class="theme-btn" id="blossom" style="background-color:rgb(255, 52, 127);" title="Cherry Blossom" onclick="changeThemeById('blossom')"></button>
+        </div>
+    </div>
+</div>
+
+
+<div class="content">
+    <h1>Manage Scores</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="alert {{ 'alert-danger' if category == 'error' else 'alert-success' }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+    <form method="POST" action="{{ url_for('add_score') }}">
+        <div class="form-group">
+            <label for="subject_name">Subject Name:</label>
+            <select name="subject_name" id="selectbox" required>
+                <option value="">Select Subject</option>
+                {% for subject in subjects %}
+                    <option value="{{ subject.subject_name }}">{{ subject.subject_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    
+        <div class="form-group">
+            <label for="score_type">Score Type:</label>
+            <select name="score_type" id="score_type" onchange="toggleExamType()">
+                <option value="Quiz">Quiz</option>
+                <option value="Activity">Activity</option>
+                <option value="Exam">Exam</option>
+            </select>
+        </div>
+    
+        <div id="exam_type_field" style="display: none;" class="form-group">
+            <label for="exam_type">Exam Type:</label>
+            <select name="exam_type" id="exam_type">
+                <option value="">Select Exam Type</option>
+                <option value="Midterm">Midterm</option>
+                <option value="Finals">Finals</option>
+            </select>
+        </div>
+    
+        <div id="score_type_number_wrapper" class="form-group">
+            <label for="score_type_number">Score Type Number:</label>
+            <select name="score_type_number" id="selectbox">
+                <option value="">Select</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+    
+        <div class="form-group">
+            <label for="score">Score:</label>
+            <input type="number" name="score" id="score" required>
+        </div>
+    
+        <div class="form-group">
+            <button type="submit">Add Score</button>
+        </div>
+    </form>
+    
+    
+    <h2>Existing Scores</h2>
+    <table class="info-table">
+        <thead>
+            <tr>
+                <th>Score ID</th>
+                <th>Subject Name</th>
+                <th>Type</th>
+                <th>Number</th>
+                <th>Exam Type</th>
+                <th>Score</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for score in scores %}
+            <tr>
+                <td>{{ score.score_id }}</td>
+                <td>{{ score.subject_name }}</td>
+                <td>{{ score.score_type }}</td>
+                <td>{{ score.score_type_number }}</td>
+                <td>{{ score.exam_type if score.score_type == 'Exam' else 'N/A' }}</td> 
+                <td>{{ score.score }}</td>
+                <td>
+                    <button onclick="openEditScoreModal({{ score.score_id }}, '{{ score.subject_name }}', '{{ score.score_type }}', '{{ score.score_type_number }}', '{{ score.exam_type }}', '{{ score.score }}')">Edit</button>
+                    <button onclick="deleteScore({{ score.score_id }})">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+  
+    function deleteScore(scoreId) {
+        fetch('/delete_score', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ score_id: scoreId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting score');
+        });
+    }
+
+   
+
+    function toggleExamType() {
+        const scoreType = document.getElementById('score_type').value;
+        const scoreTypeNumberWrapper = document.getElementById('score_type_number_wrapper');
+        const examTypeFieldWrapper = document.getElementById('exam_type_field');
+        const examType = document.getElementById('exam_type');
+        const scoreTypeNumber = document.getElementById('score_type_number');
+
+        if (scoreType === 'Exam') {
+            examTypeFieldWrapper.style.display = 'block';
+            examType.disabled = false;
+
+            scoreTypeNumberWrapper.style.display = 'none';  
+            scoreTypeNumber.required = false;
+        } else {
+            examTypeFieldWrapper.style.display = 'none';
+            examType.disabled = true;
+            examType.value = '';
+
+            scoreTypeNumberWrapper.style.display = 'block';  
+            scoreTypeNumber.required = true;
+        }
+    }
+   
+    
+
+    function openEditScoreModal(scoreId, subjectName, scoreType, scoreTypeNumber, examType, score) {
+        
+        document.getElementById("editScoreID").value = scoreId;
+        document.getElementById("editSubjectName").value = subjectName;
+        document.getElementById("editScoreType").value = scoreType;
+        document.getElementById("editScoreTypeNumber").value = scoreTypeNumber;
+        document.getElementById("editExamType").value = examType;
+        document.getElementById("editScore").value = score;
+    
+       
+        document.getElementById("editScoreModal").style.display = "block";
+    }
+    
+    function closeEditScoreModal() {
+     
+        document.getElementById("editScoreModal").style.display = "none";
+    }
+    
+    function saveScoreEdit() {
+        let scoreId = document.getElementById("editScoreID").value;
+        let subjectName = document.getElementById("editSubjectName").value;
+        let scoreType = document.getElementById("editScoreType").value;
+        let scoreTypeNumber = document.getElementById("editScoreTypeNumber").value;
+        let examType = document.getElementById("editExamType").value;
+        let score = document.getElementById("editScore").value;
+    
+       
+        fetch('/edit_score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                score_id: scoreId,
+                subject_name: subjectName,
+                score_type: scoreType,
+                score_type_number: scoreTypeNumber,
+                exam_type: examType,
+                score: score
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);  
+            location.reload();    
+        })
+        .catch(error => {
+            alert('Error updating score');
+            console.error(error);
+        });
+    }
+
+
+    function changeThemeById(theme) {
+      
+        document.documentElement.setAttribute('data-theme', theme);
+    
+    
+        localStorage.setItem('theme', theme);
+    }
+    
+   
+    window.onload = function () {
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    
+        const buttons = document.querySelectorAll('#color-theme .theme-btn');
+        buttons.forEach(btn => {
+            if (btn.id === savedTheme) {
+                btn.classList.add('active-theme');
+            } else {
+                btn.classList.remove('active-theme');
+            }
+        });
+    };
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const navLinks = document.querySelectorAll("a.nav-link, button.nav-button");
+    
+        navLinks.forEach(link => {
+            link.addEventListener("click", function (e) {
+                e.preventDefault(); 
+    
+                const targetUrl = this.href || this.getAttribute("data-target");
+                if (targetUrl) {
+                 
+                    sessionStorage.setItem("target", targetUrl);
+    
+                    
+                    window.location.href = "/loading";
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

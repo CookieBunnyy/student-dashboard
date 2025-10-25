@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Calendar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="flickering-background"></div>
+    <div class="back-btn">
+      <button class="nav-button" data-target="{{ url_for('dashboard') }}">Back to Dashboard</button>
+    </div>
+    <div class="calendar">
+      <div class="timeline">
+        <div class="spacer"></div>
+      </div>
+      <div class="days">
+        {% set day_map = {
+          'Monday': 'mon',
+          'Tuesday': 'tues',
+          'Wednesday': 'wed',
+          'Thursday': 'thurs',
+          'Friday': 'fri'
+        } %}
+    
+        {% for day_name, day_class in day_map.items() %}
+        <div class="day {{ day_class }}">
+          <div class="date">
+            <p class="date-day">{{ day_name[:9] }}</p>
+          </div>
+          <div class="events">
+            {% for event in events if event.day == day_name %}
+              <div class="event start-{{ event.start }}">
+                <p class="title">{{ event.subject_name }}</p>
+                {% if event.end %}
+                  <p class="time">{{ event.start }} - {{ event.end }}</p>
+                {% else %}
+                  <p class="time">{{ event.start }}</p>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+<script>
+    function changeThemeById(theme) {
+        
+        document.documentElement.setAttribute('data-theme', theme);
+    
+       
+        localStorage.setItem('theme', theme);
+    }
+    
+  
+    window.onload = function () {
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    
+       
+        const buttons = document.querySelectorAll('#color-theme .theme-btn');
+        buttons.forEach(btn => {
+            if (btn.id === savedTheme) {
+                btn.classList.add('active-theme');
+            } else {
+                btn.classList.remove('active-theme');
+            }
+        });
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const navLinks = document.querySelectorAll("a.nav-link, button.nav-button");
+  
+      navLinks.forEach(link => {
+          link.addEventListener("click", function (e) {
+              e.preventDefault(); 
+  
+              const targetUrl = this.href || this.getAttribute("data-target");
+              if (targetUrl) {
+               
+                  sessionStorage.setItem("target", targetUrl);
+  
+                  
+                  window.location.href = "/loading";
+              }
+          });
+      });
+  });
+</script>
+</body>
+</html>
